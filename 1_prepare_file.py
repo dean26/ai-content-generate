@@ -20,17 +20,17 @@ def truncate_text(text, max_tokens=3800):
         return truncated_text
     return text
 
-
 with open('blogs.json', 'r', encoding='utf-8') as file:
     blogs = json.load(file)
 
 
 def extract_keywords(text):
+    text = truncate_text(text)
     dialogue = [
         {'role': 'system',
          'content': 'You will be provided with a block of text, and your task is to extract a six of keywords from it.Return only 6 keywords and nothing more. Don\'t return "Keyword" at the beginning. Don\'t return list with digits.'},
         {'role': 'user',
-         'content': truncate_text(text)}
+         'content': text}
     ]
 
     response = openai.ChatCompletion.create(
@@ -47,7 +47,8 @@ def extract_keywords(text):
 final_results = []
 
 for blog in blogs:
-    time.sleep(2.1)
+    time.sleep(1.5)
+
     try:
         print("----")
         print("title:", blog["title"])
@@ -56,6 +57,7 @@ for blog in blogs:
         formatted_keywords = ', '.join(keywords)
         print("keywords:", formatted_keywords)
         print("----")
+
         message_structure = {
             "role": "system",
             "content": "You are a helpful assistant specialized in generating SEO-optimized content for blogs."
@@ -76,8 +78,10 @@ for blog in blogs:
         }
         result["messages"].append(assistant_message)
         final_results.append(result)
-    except:
-        print("Error")
+
+    except Exception as e:
+        print("Error:", e)
+        #traceback.print_exc()
         time.sleep(4)
 
 with open('result.jsonl', 'w') as file:

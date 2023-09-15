@@ -25,7 +25,6 @@ with open('blogs.json', 'r', encoding='utf-8') as file:
 
 
 def extract_keywords(text):
-    text = truncate_text(text)
     dialogue = [
         {'role': 'system',
          'content': 'You will be provided with a block of text, and your task is to extract a six of keywords from it.Return only 6 keywords and nothing more. Don\'t return "Keyword" at the beginning. Don\'t return list with digits.'},
@@ -46,16 +45,22 @@ def extract_keywords(text):
 
 final_results = []
 
+licznik = 1
 for blog in blogs:
     time.sleep(1.5)
 
     try:
         print("----")
-        print("title:", blog["title"])
-        article_length = len(blog["plaintext"])
-        keywords = extract_keywords((blog["plaintext"]))
+
+        title = blog["title"]
+        print("title:", title)
+
+        text = truncate_text(blog["plaintext"])
+        article_length = len(text)
+        keywords = extract_keywords(text)
         formatted_keywords = ', '.join(keywords)
         print("keywords:", formatted_keywords)
+
         print("----")
 
         message_structure = {
@@ -68,13 +73,13 @@ for blog in blogs:
 
         user_message = {
             "role": "user",
-            "content": f"I own a company and I need an SEO-optimized article for my website. The article should be about {article_length} characters long and include the keywords {formatted_keywords}. Return only the article without any additional content"
+            "content": f"I own a company and I need an SEO-optimized article for my website. The article should include the keywords {formatted_keywords}. Return only the article without any additional content. Generate the article and end with '##STOP##' when it's complete."
         }
         result["messages"].append(user_message)
 
         assistant_message = {
             "role": "assistant",
-            "content": blog["plaintext"]
+            "content": f"Title:\n{title}\n\nContent:\n{text}\n\n##STOP##"
         }
         result["messages"].append(assistant_message)
         final_results.append(result)

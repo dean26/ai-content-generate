@@ -7,7 +7,7 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 response = openai.File.create(
-  file=open("result.jsonl", "rb"),
+  file=open("results_modified.jsonl", "rb"),
   purpose='fine-tune'
 )
 

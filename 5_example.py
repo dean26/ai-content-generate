@@ -41,7 +41,7 @@ def create_content(keywords, article_length = 6000):
         if max_iteration < 1:
             break
 
-    #total_text = total_text.replace(stop_phrase, '')
+    total_text = total_text.replace(stop_phrase, '')
 
     return {'len' : len(total_text), 'text' : total_text }
 
